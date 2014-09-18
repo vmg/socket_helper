@@ -14,10 +14,10 @@ struct recv_args {
 static VALUE
 recv_loop(void *data)
 {
-    struct recv_args *arg = data;
-    ssize_t ret;
+	struct recv_args *arg = data;
+	ssize_t ret;
 
-    ret = recv(arg->fd,
+	ret = recv(arg->fd,
 		RSTRING_PTR(arg->buffer) + arg->pos,
 		RSTRING_LEN(arg->buffer) - arg->pos,
 		arg->flags
@@ -27,25 +27,26 @@ recv_loop(void *data)
 		return (VALUE)ret;
 
 	arg->pos += ret;
-    return (VALUE)ret;
+	return (VALUE)ret;
 }
 
-static VALUE rb_socket_read_in_full(int argc, VALUE *argv, VALUE self)
+static VALUE
+rb_socket_read_in_full(int argc, VALUE *argv, VALUE self)
 {
 	rb_io_t *fptr;
 	VALUE rb_sock, rb_buffer, rb_klass;
 	struct recv_args arg;
 	long buflen;
 
-    VALUE len, flg;
-    rb_scan_args(argc, argv, "21", &rb_sock, &len, &flg);
+	VALUE len, flg;
+	rb_scan_args(argc, argv, "21", &rb_sock, &len, &flg);
 
-    if (flg == Qnil)
+	if (flg == Qnil)
 		arg.flags = 0;
-    else
+	else
 		arg.flags = NUM2INT(flg);
 
-    buflen = NUM2INT(len);
+	buflen = NUM2INT(len);
 
 	GetOpenFile(rb_sock, fptr);
 	if (rb_io_read_pending(fptr)) {
@@ -56,7 +57,7 @@ static VALUE rb_socket_read_in_full(int argc, VALUE *argv, VALUE self)
 	arg.pos = 0;
 	arg.buffer = rb_buffer = rb_tainted_str_new(0, buflen);
 
-    rb_klass = RBASIC(rb_buffer)->klass;
+	rb_klass = RBASIC(rb_buffer)->klass;
 	rb_obj_hide(rb_buffer);
 
 	while (arg.pos < buflen) {
