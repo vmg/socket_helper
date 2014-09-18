@@ -30,7 +30,7 @@ recv_loop(void *data)
     return (VALUE)ret;
 }
 
-static VALUE rb_bertrpc_socket_read_in_full(int argc, VALUE *argv, VALUE self)
+static VALUE rb_socket_read_in_full(int argc, VALUE *argv, VALUE self)
 {
 	rb_io_t *fptr;
 	VALUE rb_sock, rb_buffer, rb_klass;
@@ -68,8 +68,8 @@ static VALUE rb_bertrpc_socket_read_in_full(int argc, VALUE *argv, VALUE self)
 		if (!slen)
 			break;
 
-		if (!rb_io_wait_readable(fptr->fd))
-			rb_sys_fail("recvfrom(2)");
+		if (slen < 0 && !rb_io_wait_readable(fptr->fd))
+			rb_sys_fail("recv(2)");
 	}
 
 	rb_obj_reveal(rb_buffer, rb_klass);
